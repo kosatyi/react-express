@@ -3,7 +3,6 @@
     "description": "ReactPHP router written in express.js style",
     "homepage": "https://kosatyi.com/",
     "license": "MIT",
-    "version": "0.0.1",
     "authors": [
         {
             "name": "Stepan Kosatyi",
