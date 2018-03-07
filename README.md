@@ -19,7 +19,7 @@ ReactPHP router written in express.js style
 
 ### System Requirements
 
-PHP 5.2 and later.
+PHP 5.6 and later.
 
 ### Dependencies
 
