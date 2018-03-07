@@ -69,7 +69,7 @@ class Response extends Model
      * @param $code
      * @return $this
      */
-    public function status($code)
+    public function status( $code)
     {
         $this->status = $code;
         return $this;
