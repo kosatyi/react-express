@@ -1,7 +1,7 @@
 {
     "name": "kosatyi/react-express",
     "description": "ReactPHP router written in express.js style",
-    "homepage": "https://kosatyi.com/",
+    "homepage": "https://kosatyi.com/react-express/",
     "license": "MIT",
     "authors": [
         {

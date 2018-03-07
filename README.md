@@ -9,11 +9,6 @@ ReactPHP router written in express.js style
 <a href="https://packagist.org/packages/kosatyi/react-express"><img src="https://img.shields.io/packagist/dt/kosatyi/react-express.svg"/></a>
 <a href="https://packagist.org/packages/kosatyi/react-express"><img src="https://img.shields.io/github/license/kosatyi/react-express.svg" /></a>
 </p>
-<p align="center">
-<a href="https://kosatyi.com/react-express/"><img src="https://img.shields.io/badge/official-website-green.svg" /></a>
-<a href="https://kosatyi.com/react-express/docs/"><img src="https://img.shields.io/badge/sdk-documentation-orange.svg" /></a>
-</p>
-
 
 ## Installation
 
