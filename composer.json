@@ -13,10 +13,7 @@
     "require": {
         "react/event-loop": "^0.4.3",
         "react/http": "^0.8.1",
-        "twig/twig": "^2.4",
-        "psr/container": "^1.0",
-        "monolog/monolog": "^1.23",
-        "hassankhan/config": "^0.11.2"
+        "psr/container": "^1.0"
     },
     "require-dev": {
         "victorjonsson/markdowndocs": "^1.3",
