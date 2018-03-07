@@ -1,6 +1,6 @@
 # ReactExpress
 
-Flexible software development kit that covers e-commerce for businesses of all types and support popular CMS modules for fast integration in existing infrastructure.
+ReactPHP router written in express.js style
 
 <p align="center">
 <a href="https://packagist.org/packages/kosatyi/react-express"><img src="https://img.shields.io/packagist/v/kosatyi/react-express.svg" /></a>
