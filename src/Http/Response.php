@@ -120,13 +120,12 @@ class Response extends Model
         return $this->json($this->all());
     }
 
-
     /**
      * @param $code
-     * @param null $content
+     * @param string $content
      * @return $this
      */
-    public function sendStatus($code, $content = null)
+    public function sendStatus($code, string $content = '')
     {
         $this->reset();
         $this->header('Content-Type', 'text/plain');
