@@ -103,7 +103,7 @@ class Response extends Model
      * @param $content
      * @return $this
      */
-    public function json($content)
+    public function json( $content )
     {
         $this->reset();
         $this->header('Content-Type', 'application/json');
