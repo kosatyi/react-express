@@ -172,12 +172,21 @@ class Application
     public function request(ServerRequestInterface $httpRequest)
     {
         $this->response = new Response();
-        $this->request  = new Request($httpRequest);
+        $this->request = new Request($httpRequest);
         $path = $this->request->attr('path');
         $method = $this->request->attr('method');
         $stack = $this->router->match($path, $method);
-        $this->stack($stack);
+        try {
+            $this->stack($stack);
+        } catch (\Exception $e) {
+            $this->response->sendStatus($e->getCode(), $e->getMessage());
+        }
         return $this->response->promise();
+    }
+
+    public function halt(int $code, string $message)
+    {
+        throw new \Exception($message, $code);
     }
 
     /**
