@@ -14,7 +14,7 @@ ReactPHP router written in express.js style
 
 ### System Requirements
 
-PHP 7.1 and later.
+PHP 5.6 and later.
 
 ### Dependencies
 
@@ -52,6 +52,9 @@ use ReactExpress\Application;
 $app = Application::instance();
 $app->get('/',function( $app ){
     $app->response->send('Hello World!');
+});
+$app->post('/',function( $app ){
+    $app->response->json( $app->response->all() );
 });
 $app->listen(8080,'127.0.0.1');
 ```

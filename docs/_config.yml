@@ -1,0 +1,33 @@
+plugins:
+  - jekyll-seo-tag
+
+port: 4001
+
+styles:
+
+remote_theme: kosatyi/sjt
+
+exclude:
+  - vendor
+
+javascript:
+
+baseurl: /react-express
+
+navigation: true
+
+title: ReactExpress
+description: ReactPHP router written in express.js style
+
+
+author:
+  name: Stepan Kosatyi
+  url: http://www.kosatyi.com/
+
+toolbar:
+-
+  name: Docs
+  link: /docs/
+-
+  name: Examples
+  link: /examples/
