@@ -2,28 +2,30 @@
 
 namespace ReactExpress\Core;
 
+use ReactExpress\Exception\DispatcherException;
+use ReactExpress\Exception\HaltException;
+
 /**
  * Class Dispatcher
  * @package ReactExpress\Core
  */
 class Dispatcher
 {
-
     /**
      * @var array
      */
     protected $callbacks = array();
-
     /**
      * @param string $name
      * @param array $params
      * @return mixed|null
+     * @throws \Exception|DispatcherException|HaltException
      */
     public function run(string $name, array $params = [])
     {
         try {
             return $this->execute($this->get($name), $params);
-        } catch (\Exception $e) {
+        } catch (DispatcherException $e) {
 
         }
         return null;
@@ -60,14 +62,14 @@ class Dispatcher
      * @param $callback
      * @param array $params
      * @return mixed
-     * @throws \Exception
+     * @throws DispatcherException
      */
     private function execute($callback, array $params = [])
     {
         if (is_callable($callback)) {
             return call_user_func_array($callback, $params);
         } else {
-            throw new \Exception('Invalid callback specified.');
+            throw new DispatcherException('Invalid callback specified.');
         }
     }
 }

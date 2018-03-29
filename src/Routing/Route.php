@@ -2,6 +2,7 @@
 
 namespace ReactExpress\Routing;
 
+use ReactExpress\Core\Container;
 use ReactExpress\Application;
 use ReactExpress\Core\Model;
 use ReactExpress\Util\PathToRegexp;
@@ -60,19 +61,19 @@ class Route extends Model
      * @param string $path
      * @param $action
      */
-    public function __construct(string $method, string $path, $action)
+    public function __construct(string $method, string $path, $action )
     {
         $this->method = strtoupper($method);
-        $this->path = $path;
+        $this->path   = $path;
         $this->action = $action;
         $this->parse();
     }
 
     /**
-     * @param Application $app
+     * @param Container $app
      * @param callable $next
      */
-    public function run(Application $app, callable $next)
+    public function run(Container $app, callable $next)
     {
         if (is_callable($this->action)) {
             call_user_func_array($this->action, [$app, $next]);

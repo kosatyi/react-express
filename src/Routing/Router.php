@@ -23,56 +23,47 @@ class Router
     private $method = '';
 
     /**
-     * Router constructor.
+     * @var array
      */
-    public function __construct()
-    {
+    private $methods = [
+        'use',
+        'all',
+        'get',
+        'post',
+        'head',
+        'put',
+        'delete',
+        'connect',
+        'options',
+        'patch'
+    ];
 
+
+    public function has(string $method)
+    {
+        return in_array($method, $this->methods);
     }
 
-    /**
-     * @param string $method
-     * @param array $arguments
-     */
-    public function __call(string $method, array $arguments)
+
+    public function __call(string $name,array $params = [])
     {
-        array_unshift($arguments, $method);
-        if (count($arguments) == 1) array_unshift($arguments, '/');
-        call_user_func_array([$this, 'addRoute'], $arguments);
+        if (method_exists($this, $name)) {
+            return call_user_func_array([$this, $name], $params);
+        }
+        if (count($params) == 1) array_unshift($params, '/');
+        $this->routes[] = new Route($name, $params[0], $params[1]);
     }
 
-    /**
-     * @param string $method
-     * @param string $uri
-     * @param $action
-     */
-    public function addRoute(string $method, string $uri, $action)
-    {
-        $this->routes[] = new Route($method, $uri, $action);
-    }
-
-    /**
-     * @param string $path
-     * @return Routes
-     */
     public function route(string $path)
     {
         return new Routes($this, $path);
     }
 
-    /**
-     * @return static
-     */
     public function router()
     {
         return new static();
     }
 
-    /**
-     * @param string $path
-     * @param string $method
-     * @return array
-     */
     public function match(string $path, string $method)
     {
         $this->path = $path;
@@ -84,11 +75,7 @@ class Router
         return $stack;
     }
 
-    /**
-     * @param string $path
-     * @param string $method
-     * @return array
-     */
+
     private function getStack(string $path, string $method)
     {
         $stack = [];

@@ -15,11 +15,11 @@ use ReactExpress\Application;
  * Class Server
  * @package ReactExpress\Core
  */
-class Server
+class Runner
 {
 
     /**
-     * @var
+     * @var Application
      */
     private $app;
 

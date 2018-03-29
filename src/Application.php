@@ -4,15 +4,16 @@ namespace ReactExpress;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-use ReactExpress\Core\Dispatcher;
-use ReactExpress\Core\Server;
-use ReactExpress\Core\Loader;
+use ReactExpress\Core\Container;
+use ReactExpress\Core\Runner;
 
 use ReactExpress\Routing\Router;
 use ReactExpress\Routing\Route;
 
 use ReactExpress\Http\Request;
 use ReactExpress\Http\Response;
+
+use ReactExpress\Exception\HaltException;
 
 /**
  * Class Application
@@ -21,49 +22,14 @@ use ReactExpress\Http\Response;
 class Application
 {
 
-    /**
-     * @var null
-     */
     protected static $instance = null;
 
-    /**
-     * @var Router
-     */
+    private $container;
+
     private $router;
-    /**
-     * @var Server
-     */
-    private $server;
 
-    /**
-     * @var
-     */
-    public $template;
-    /**
-     * @var
-     */
-    public $request;
-    /**
-     * @var
-     */
-    public $response;
-    /**
-     * @var
-     */
-    public $route;
+    private $runner;
 
-    /**
-     * @var Loader
-     */
-    protected $loader;
-    /**
-     * @var Dispatcher
-     */
-    protected $dispatcher;
-
-    /**
-     * @return null|static
-     */
     public static function instance()
     {
         if (!isset(self::$instance)) {
@@ -72,128 +38,57 @@ class Application
         return self::$instance;
     }
 
-    /**
-     * Application constructor.
-     */
     public function __construct()
     {
-        $this->loader = new Loader;
-        $this->dispatcher = new Dispatcher;
-        $this->server = new Server;
+        $this->runner = new Runner;
         $this->router = new Router;
+        $this->container = new Container;
     }
 
-    /**
-     * @param $key
-     * @param $value
-     */
-    public function __set($key, $value)
-    {
-
-    }
-
-    /**
-     * @param $key
-     */
-    public function __get($key)
-    {
-
-    }
-
-    /**
-     * @param $name
-     * @param $params
-     * @return mixed|null|object|\ReflectionClass
-     */
     public function __call($name, $params)
     {
         if (method_exists($this, $name)) {
             return call_user_func_array([$this, $name], $params);
-        } else if ($this->dispatcher->has($name)) {
-            array_unshift($params, $this);
-            return $this->dispatcher->run($name, $params);
-        } else if ($this->loader->get($name)) {
-            return $this->loader->load($name);
-        } else {
-            return call_user_func_array([$this->router, $name], $params);
         }
+        return call_user_func_array([$this->router, $name], $params);
     }
 
-    /**
-     * @param $name
-     * @param $class
-     * @param array $params
-     * @return $this
-     */
-    public function middleware($name, $class, array $params = array())
-    {
-        $this->loader->register($name, $class, $params);
-        return $this;
-    }
-
-    /**
-     * @param $name
-     * @param array $params
-     * @return mixed|null|object|\ReflectionClass
-     */
-    public function load($name, array $params = array())
-    {
-        return $this->loader->load($name, $params);
-    }
-
-    /**
-     * @param $name
-     * @param $callback
-     */
-    public function method($name, $callback)
-    {
-        if (!method_exists($this, $name)) {
-            $this->dispatcher->set($name, $callback);
-        }
-    }
-
-    /**
-     * @param $port
-     * @param $host
-     * @param array $cert
-     * @return $this
-     */
     public function listen($port, $host, array $cert = [])
     {
-        $this->server->handler($this);
-        $this->server->listen($port, $host, $cert);
+        $this->runner->handler($this);
+        $this->runner->listen($port, $host, $cert);
         return $this;
     }
 
-    /**
-     * @param ServerRequestInterface $httpRequest
-     * @return \React\Promise\Promise|\React\Promise\PromiseInterface
-     */
     public function request(ServerRequestInterface $httpRequest)
     {
-        $this->response = new Response();
-        $this->request = new Request($httpRequest);
-        $path = $this->request->attr('path');
-        $method = $this->request->attr('method');
-        $stack = $this->router->match($path, $method);
+
+        $container = $this->container;
+
+        $response  = new Response();
+        $request   = new Request($httpRequest);
+
+        $path   = $request->attr('path');
+        $method = $request->attr('method');
+
+        $stack  = $this->router->match($path, $method);
+
+        $container->setResponse($response);
+        $container->setRequest($request);
+
         try {
             $this->stack($stack);
+        } catch (HaltException $e) {
+            $response->sendStatus($e->getCode(), $e->getMessage());
         } catch (\Exception $e) {
-            $this->response->sendStatus($e->getCode(), $e->getMessage());
+            $response->sendStatus(500, 'Server Error');
         }
-        return $this->response->promise();
+
+        return $response->promise();
+
     }
 
-    public function halt(int $code, string $message)
-    {
-        throw new \Exception($message, $code);
-    }
-
-    /**
-     * @param $fn
-     * @return \Closure
-     */
-    private function next($fn)
+    private function next(callable $fn)
     {
         return function (...$args) use ($fn) {
             if ($fn === null) return;
@@ -204,22 +99,24 @@ class Application
 
     /**
      * @param array $stack
+     * @throws \Exception|HaltException
      */
     private function stack(array $stack)
     {
         $index = 0;
         $stack[] = new Route('', '', function () {
-            $this->response->sendStatus(404);
+            $this->container->response->sendStatus(404);
         });
         $next = function () use (&$index, &$stack, &$next) {
             if ($index == count($stack)) {
                 return;
             }
-            $this->route = $stack[$index++];
+            $route = $stack[$index++];
             $callback = $this->next(function () use (&$next) {
                 $next();
             });
-            $this->route->run($this, $callback);
+            $this->container->setRoute($route);
+            $route->run($this->container, $callback);
         };
         $next();
     }
