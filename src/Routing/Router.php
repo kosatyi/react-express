@@ -6,6 +6,10 @@ namespace ReactExpress\Routing;
  * Class Router
  * @package ReactExpress\Routing
  */
+/**
+ * Class Router
+ * @package ReactExpress\Routing
+ */
 class Router
 {
 
@@ -39,13 +43,21 @@ class Router
     ];
 
 
+    /**
+     * @param string $method
+     * @return bool
+     */
     public function has(string $method)
     {
         return in_array($method, $this->methods);
     }
 
-
-    public function __call(string $name,array $params = [])
+    /**
+     * @param string $name
+     * @param array $params
+     * @return mixed
+     */
+    public function __call(string $name, array $params = [])
     {
         if (method_exists($this, $name)) {
             return call_user_func_array([$this, $name], $params);
@@ -54,16 +66,28 @@ class Router
         $this->routes[] = new Route($name, $params[0], $params[1]);
     }
 
+    /**
+     * @param string $path
+     * @return Routes
+     */
     public function route(string $path)
     {
         return new Routes($this, $path);
     }
 
+    /**
+     * @return static
+     */
     public function router()
     {
         return new static();
     }
 
+    /**
+     * @param string $path
+     * @param string $method
+     * @return array
+     */
     public function match(string $path, string $method)
     {
         $this->path = $path;
@@ -75,7 +99,11 @@ class Router
         return $stack;
     }
 
-
+    /**
+     * @param string $path
+     * @param string $method
+     * @return array
+     */
     private function getStack(string $path, string $method)
     {
         $stack = [];
