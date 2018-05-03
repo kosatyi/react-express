@@ -13,7 +13,6 @@ use ReactExpress\Routing\Route;
  */
 class Container
 {
-
     /**
      * @var Loader
      */
@@ -57,7 +56,7 @@ class Container
     public function __call($name, $params)
     {
         if (method_exists($this, $name)) {
-            return call_user_func_array([$this, $name], $params);
+            return call_user_func_array([$this,$name],$params);
         }
         if ($this->dispatcher->has($name)) {
             array_unshift($params, $this);
@@ -85,7 +84,6 @@ class Container
     public function __set( $prop , $value ){
 
     }
-
     /**
      * @param Route $route
      * @return $this
@@ -94,7 +92,6 @@ class Container
         $this->route = $route;
         return $this;
     }
-
     /**
      * @param Response $response
      * @return $this
@@ -103,7 +100,6 @@ class Container
         $this->response = $response;
         return $this;
     }
-
     /**
      * @param Request $request
      * @return $this
@@ -112,7 +108,6 @@ class Container
         $this->request = $request;
         return $this;
     }
-
     /**
      * @param $name
      * @param $class
@@ -126,7 +121,6 @@ class Container
         }
         return $this;
     }
-
     /**
      * @param $name
      * @param $callback
@@ -137,7 +131,6 @@ class Container
             $this->dispatcher->set($name, $callback);
         }
     }
-
     /**
      * @param $name
      * @param array $params
@@ -147,7 +140,6 @@ class Container
     {
         return $this->loader->load($name, $params);
     }
-
     /**
      * @param int $code
      * @param string $message

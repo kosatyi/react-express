@@ -21,15 +21,10 @@ use ReactExpress\Exception\HaltException;
  */
 class Application
 {
-
     protected static $instance = null;
-
     private $container;
-
     private $router;
-
     private $runner;
-
     public static function instance()
     {
         if (!isset(self::$instance)) {
@@ -37,45 +32,38 @@ class Application
         }
         return self::$instance;
     }
-
     public function __construct()
     {
         $this->runner = new Runner;
         $this->router = new Router;
         $this->container = new Container;
     }
-
     public function __call($name, $params)
     {
         if (method_exists($this, $name)) {
             return call_user_func_array([$this, $name], $params);
         }
+        if (method_exists($this->container, $name)) {
+            return call_user_func_array([$this->container, $name], $params);
+        }
         return call_user_func_array([$this->router, $name], $params);
     }
-
     public function listen($port, $host, array $cert = [])
     {
         $this->runner->handler($this);
         $this->runner->listen($port, $host, $cert);
         return $this;
     }
-
     public function request(ServerRequestInterface $httpRequest)
     {
-
         $container = $this->container;
-
         $response  = new Response();
         $request   = new Request($httpRequest);
-
         $path   = $request->attr('path');
         $method = $request->attr('method');
-
         $stack  = $this->router->match($path, $method);
-
         $container->setResponse($response);
         $container->setRequest($request);
-
         try {
             $this->stack($stack);
         } catch (HaltException $e) {
@@ -83,11 +71,8 @@ class Application
         } catch (\Exception $e) {
             $response->sendStatus(500, 'Server Error');
         }
-
         return $response->promise();
-
     }
-
     private function next(callable $fn)
     {
         return function (...$args) use ($fn) {
@@ -96,7 +81,6 @@ class Application
             $fn = null;
         };
     }
-
     /**
      * @param array $stack
      * @throws \Exception|HaltException
@@ -104,8 +88,8 @@ class Application
     private function stack(array $stack)
     {
         $index = 0;
-        $stack[] = new Route('', '', function () {
-            $this->container->response->sendStatus(404);
+        $stack[] = new Route('','',function( $app ){
+            $app->halt(404,'Not Found');
         });
         $next = function () use (&$index, &$stack, &$next) {
             if ($index == count($stack)) {
@@ -120,5 +104,4 @@ class Application
         };
         $next();
     }
-
 }
