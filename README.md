@@ -36,7 +36,7 @@ Or add dependency manually in `composer.json`
 ```json
 {
   "require": {
-    "kosatyi/react-express":"^0.0.1"
+    "kosatyi/react-express":"dev-master"
   }
 }
 ```
