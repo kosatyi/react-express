@@ -34,8 +34,4 @@ class Request extends Model
         $this->attr('uri', (string) $request->getUri());
     }
 
-    private function getCurrentUrl(){
-        return $this->attr('protocol').'://'.$this->attr('host').$this->attr('path');
-    }
-
 }
