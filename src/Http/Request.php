@@ -31,6 +31,11 @@ class Request extends Model
         $this->attr('query', $request->getQueryParams());
         $this->attr('data', $request->getParsedBody());
         $this->attr('files', $request->getUploadedFiles());
+        $this->attr('url', $this->getCurrentUrl());
+    }
+
+    private function getCurrentUrl(){
+        return $this->attr('protocol').'://'.$this->attr('host').$this->attr('path');
     }
 
 }
