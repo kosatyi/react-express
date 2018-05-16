@@ -135,6 +135,11 @@ class Response extends Model
         return $this;
     }
 
+    /**
+     * @param string $url
+     * @param int $code
+     * @return $this
+     */
     public function redirect(string $url = '', int $code = 303){
 
         $this->reset();
