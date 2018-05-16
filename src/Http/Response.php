@@ -139,7 +139,7 @@ class Response extends Model
 
         $this->reset();
         $this->status($code);
-        $this->header('Location', 'text/plain');
+        $this->header('Location', $url);
         $this->write($url);
         $this->end();
         return $this;
