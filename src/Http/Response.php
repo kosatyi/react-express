@@ -135,6 +135,16 @@ class Response extends Model
         return $this;
     }
 
+    public function redirect(string $url = '', int $code = 303){
+
+        $this->reset();
+        $this->status($code);
+        $this->header('Location', 'text/plain');
+        $this->write($url);
+        $this->end();
+        return $this;
+    }
+
     /**
      *
      */

@@ -21,10 +21,26 @@ use ReactExpress\Exception\HaltException;
  */
 class Application
 {
+    /**
+     * @var null
+     */
     protected static $instance = null;
+    /**
+     * @var Container
+     */
     private $container;
+    /**
+     * @var Router
+     */
     private $router;
+    /**
+     * @var Runner
+     */
     private $runner;
+
+    /**
+     * @return null|static
+     */
     public static function instance()
     {
         if (!isset(self::$instance)) {
@@ -32,12 +48,22 @@ class Application
         }
         return self::$instance;
     }
+
+    /**
+     * Application constructor.
+     */
     public function __construct()
     {
         $this->runner = new Runner;
         $this->router = new Router;
         $this->container = new Container;
     }
+
+    /**
+     * @param $name
+     * @param $params
+     * @return mixed
+     */
     public function __call($name, $params)
     {
         if (method_exists($this, $name)) {
@@ -48,12 +74,24 @@ class Application
         }
         return call_user_func_array([$this->router, $name], $params);
     }
+
+    /**
+     * @param $port
+     * @param $host
+     * @param array $cert
+     * @return $this
+     */
     public function listen($port, $host, array $cert = [])
     {
         $this->runner->handler($this);
         $this->runner->listen($port, $host, $cert);
         return $this;
     }
+
+    /**
+     * @param ServerRequestInterface $httpRequest
+     * @return \React\Promise\Promise|\React\Promise\PromiseInterface
+     */
     public function request(ServerRequestInterface $httpRequest)
     {
         $container = $this->container;
@@ -73,6 +111,11 @@ class Application
         }
         return $response->promise();
     }
+
+    /**
+     * @param callable $fn
+     * @return \Closure
+     */
     private function next(callable $fn)
     {
         return function (...$args) use ($fn) {
