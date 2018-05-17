@@ -3,8 +3,9 @@
 namespace ReactExpress\Http;
 
 use Psr\Http\Message\ServerRequestInterface;
-
 use ReactExpress\Core\Model;
+use WyriHaximus\React\Http\Middleware\SessionMiddleware;
+
 
 /**
  * Class Request
@@ -13,13 +14,16 @@ use ReactExpress\Core\Model;
 class Request extends Model
 {
 
+    private $session;
     /**
      * Request constructor.
      * @param ServerRequestInterface $request
      */
     public function __construct(ServerRequestInterface $request)
     {
+        $this->session = $request->getAttribute(SessionMiddleware::ATTRIBUTE_NAME);
         $uri = $request->getUri();
+        $this->attr('uri', (string) $uri);
         $this->attr('path', urldecode($uri->getPath()));
         $this->attr('host', urldecode($uri->getHost()));
         $this->attr('authority', urldecode($uri->getAuthority()));
@@ -31,7 +35,11 @@ class Request extends Model
         $this->attr('query', $request->getQueryParams());
         $this->attr('data', $request->getParsedBody());
         $this->attr('files', $request->getUploadedFiles());
-        $this->attr('uri', (string) $request->getUri());
+    }
+
+
+    public function session(){
+        return $this->session;
     }
 
 }

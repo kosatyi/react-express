@@ -7,9 +7,12 @@ use React\Socket\Server as SocketServer;
 use React\Socket\SecureServer as SecureSocketServer;
 use React\Http\Server as HttpServer;
 
+use React\Cache\ArrayCache;
+
 use Psr\Http\Message\ServerRequestInterface;
 
 use ReactExpress\Application;
+use WyriHaximus\React\Http\Middleware\SessionMiddleware;
 
 /**
  * Class Server
@@ -40,10 +43,13 @@ class Runner
      */
     public function listen($port, $host = '127.0.0.1', $cert = [])
     {
-        $loop = Factory::create();
-        $http = new HttpServer(function (ServerRequestInterface $request) {
+        $loop    = Factory::create();
+        $cache   = new ArrayCache();
+        $session = new SessionMiddleware('session' , $cache , [365,'/','',false,false] );
+        $handler = function (ServerRequestInterface $request) {
             return $this->app->request($request);
-        });
+        };
+        $http = new HttpServer([$session, $handler]);
         $socket = new SocketServer("{$host}:{$port}", $loop);
         if (count($cert) > 0) {
             $socket = new SecureSocketServer($socket, $loop, $cert);

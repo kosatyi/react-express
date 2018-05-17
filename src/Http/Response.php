@@ -107,7 +107,7 @@ class Response extends Model
     {
         $this->reset();
         $this->header('Content-Type', 'application/json');
-        $this->write(json_encode($content));
+        $this->write(json_encode($content,JSON_PRETTY_PRINT));
         $this->end();
         return $this;
     }
