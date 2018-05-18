@@ -1,6 +1,5 @@
 .idea
 vendor
-examples
 _site
 tests/report
 tests/logs
