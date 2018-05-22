@@ -3,16 +3,13 @@
 namespace ReactExpress;
 
 use Psr\Http\Message\ServerRequestInterface;
-
+use ReactExpress\Core\Config;
 use ReactExpress\Core\Container;
 use ReactExpress\Core\Runner;
-
 use ReactExpress\Routing\Router;
 use ReactExpress\Routing\Route;
-
 use ReactExpress\Http\Request;
 use ReactExpress\Http\Response;
-
 use ReactExpress\Exception\HaltException;
 
 /**
@@ -37,7 +34,10 @@ class Application
      * @var Runner
      */
     private $runner;
-
+    /**
+     * @var Config
+     */
+    private $config;
     /**
      * @return null|static
      */
@@ -57,6 +57,7 @@ class Application
         $this->runner = new Runner;
         $this->router = new Router;
         $this->container = new Container;
+        $this->config    = new Config;
     }
 
     /**
@@ -88,6 +89,10 @@ class Application
         return $this;
     }
 
+    public function config(){
+        return $this->config;
+    }
+
     /**
      * @param ServerRequestInterface $httpRequest
      * @return \React\Promise\Promise|\React\Promise\PromiseInterface
@@ -102,6 +107,7 @@ class Application
         $stack  = $this->router->match($path, $method);
         $container->setResponse($response);
         $container->setRequest($request);
+        $container->setConfig($this->config());
         try {
             $this->stack($stack);
         } catch (HaltException $e) {

@@ -37,6 +37,31 @@ class Runner
     }
 
     /**
+     * @return SessionMiddleware
+     */
+    private function session(){
+        $config  = $this->app->config();
+        $name    = $config->get('cookie.name','session');
+        $cache   = new ArrayCache();
+        $session = new SessionMiddleware($name,$cache,[
+            $config->get('cookie.expiration',7200),
+            $config->get('cookie.path','/'),
+            $config->get('cookie.domain',''),
+            $config->get('cookie.secure',false),
+            $config->get('cookie.httponly',false)
+        ]);
+        return $session;
+    }
+    /**
+     * @return \Closure
+     */
+    private function application(){
+        $handler = function (ServerRequestInterface $request) {
+            return $this->app->request($request);
+        };
+        return $handler;
+    }
+    /**
      * @param $port
      * @param string $host
      * @param array $cert
@@ -44,13 +69,10 @@ class Runner
     public function listen($port, $host = '127.0.0.1', $cert = [])
     {
         $loop    = Factory::create();
-        $cache   = new ArrayCache();
-        $session = new SessionMiddleware('session' , $cache , [0,'/','',false,false] );
-        $handler = function (ServerRequestInterface $request) {
-            return $this->app->request($request);
-        };
-        $http = new HttpServer([$session, $handler]);
-        $socket = new SocketServer("{$host}:{$port}", $loop);
+        $session = $this->session();
+        $handler = $this->application();
+        $http    = new HttpServer([$session,$handler]);
+        $socket  = new SocketServer("{$host}:{$port}", $loop);
         if (count($cert) > 0) {
             $socket = new SecureSocketServer($socket, $loop, $cert);
         }

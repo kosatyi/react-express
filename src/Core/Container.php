@@ -36,6 +36,9 @@ class Container
      */
     private $route;
 
+    /**
+     * @var Config
+     */
     private $config;
 
     /**
@@ -45,7 +48,6 @@ class Container
     {
         $this->loader     = new Loader;
         $this->dispatcher = new Dispatcher;
-        $this->config     = new Config;
     }
 
     /**
@@ -100,6 +102,14 @@ class Container
      */
     public function setRoute(Route $route){
         $this->route = $route;
+        return $this;
+    }
+    /**
+     * @param Config $config
+     * @return $this
+     */
+    public function setConfig(Config $config){
+        $this->config = $config;
         return $this;
     }
     /**
