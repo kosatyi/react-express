@@ -47,15 +47,23 @@ class Session extends Model {
     public function isActive(){
         return $this->session->isActive();
     }
+
     /**
-     * @param array ...$args
+     * @param $keys
+     * @param null $value
      * @return $this|array|mixed|null
      */
-    public function attr(...$args){
+    public function attr($keys, $value = null){
         if(!$this->isActive()) $this->start();
         $this->data($this->session->getContents());
-        $result = parent::attr(...$args);
-        $this->session->setContents($this->all());
+        $getter = func_num_args() == 1;
+        if($getter){
+            $result = parent::attr($keys);
+        } else {
+            parent::attr($keys,$value);
+            $this->session->setContents($this->all());
+            $result = $this;
+        }
         return $result;
     }
 }
