@@ -48,14 +48,13 @@ class Session extends Model {
         return $this->session->isActive();
     }
     /**
-     * @param $keys
-     * @param null $value
+     * @param array ...$args
      * @return $this|array|mixed|null
      */
-    public function attr($keys, $value = null){
+    public function attr(...$args){
         if(!$this->isActive()) $this->start();
         $this->data($this->session->getContents());
-        $result = parent::attr($keys,$value);
+        $result = parent::attr(...$args);
         $this->session->setContents($this->all());
         return $result;
     }
