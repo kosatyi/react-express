@@ -45,7 +45,7 @@ class Runner
     {
         $loop    = Factory::create();
         $cache   = new ArrayCache();
-        $session = new SessionMiddleware('session' , $cache , [365,'/','',false,false] );
+        $session = new SessionMiddleware('session' , $cache , [0,'/','',false,false] );
         $handler = function (ServerRequestInterface $request) {
             return $this->app->request($request);
         };

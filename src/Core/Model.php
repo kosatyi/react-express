@@ -57,10 +57,11 @@ class Model implements \JsonSerializable, \Serializable
      */
     public function attr($keys, $value = null)
     {
+        $getter = func_num_args() == 1;
         if (is_string($keys)) {
             $keys = $this->path($keys);
         }
-        if (is_null($value)) {
+        if ( $getter ) {
             $copy = $this->__data__;
         } else {
             $copy =& $this->__data__;
@@ -79,13 +80,17 @@ class Model implements \JsonSerializable, \Serializable
                 $copy =& $copy[$key];
             }
         }
-        if (is_null($value)) {
+        if ( $getter ) {
             return $copy;
         }
         if (is_callable($copy)) {
             $copy($value);
         } else {
-            $copy = $value;
+            if(is_null($value)){
+                unset($copy);
+            } else {
+                $copy = $value;
+            }
         }
         return $this;
     }
