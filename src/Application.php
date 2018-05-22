@@ -21,7 +21,7 @@ use ReactExpress\Exception\HaltException;
  * @method Container method($name, $callback)
  * @method Container load($name, array $params = array())
  *
- * @method Router use(string $path,callable $action)
+ * @method Router use(string $path,callable $action = null)
  * @method Router get(string $path, callable $action)
  * @method Router post(string $path, callable $action)
  * @method Router all(string $path, callable $action)
