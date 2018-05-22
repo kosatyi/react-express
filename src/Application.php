@@ -13,8 +13,25 @@ use ReactExpress\Http\Response;
 use ReactExpress\Exception\HaltException;
 
 /**
+ *
  * Class Application
  * @package ReactExpress
+ *
+ * @method Container middleware($name, $class, array $params = array())
+ * @method Container method($name, $callback)
+ * @method Container load($name, array $params = array())
+ *
+ * @method Router use(string $path,callable $action)
+ * @method Router get(string $path, callable $action)
+ * @method Router post(string $path, callable $action)
+ * @method Router all(string $path, callable $action)
+ * @method Router put(string $path, callable $action)
+ * @method Router delete(string $path, callable $action)
+ * @method Router head(string $path, callable $action)
+ * @method Router options(string $path, callable $action)
+ * @method Router patch(string $path, callable $action)
+ * @method Router route(string $path)
+ * @method Router router()
  */
 class Application
 {
@@ -88,11 +105,12 @@ class Application
         $this->runner->listen($port, $host, $cert);
         return $this;
     }
-
+    /**
+     * @return Config
+     */
     public function config(){
         return $this->config;
     }
-
     /**
      * @param ServerRequestInterface $httpRequest
      * @return \React\Promise\Promise|\React\Promise\PromiseInterface
@@ -104,7 +122,7 @@ class Application
         $request   = new Request($httpRequest);
         $path   = $request->attr('path');
         $method = $request->attr('method');
-        $stack  = $this->router->match($path, $method);
+        $stack  = $this->router->match($path,$method);
         $container->setResponse($response);
         $container->setRequest($request);
         $container->setConfig($this->config());

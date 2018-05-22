@@ -6,10 +6,6 @@ namespace ReactExpress\Routing;
  * Class Router
  * @package ReactExpress\Routing
  */
-/**
- * Class Router
- * @package ReactExpress\Routing
- */
 class Router
 {
 
@@ -27,32 +23,6 @@ class Router
     private $method = '';
 
     /**
-     * @var array
-     */
-    private $methods = [
-        'use',
-        'all',
-        'get',
-        'post',
-        'head',
-        'put',
-        'delete',
-        'connect',
-        'options',
-        'patch'
-    ];
-
-
-    /**
-     * @param string $method
-     * @return bool
-     */
-    public function has(string $method)
-    {
-        return in_array($method, $this->methods);
-    }
-
-    /**
      * @param string $name
      * @param array $params
      * @return mixed
@@ -64,6 +34,7 @@ class Router
         }
         if (count($params) == 1) array_unshift($params, '/');
         $this->routes[] = new Route($name, $params[0], $params[1]);
+        return $this;
     }
 
     /**
