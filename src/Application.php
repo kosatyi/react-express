@@ -13,23 +13,20 @@ use ReactExpress\Http\Response;
 use ReactExpress\Exception\HaltException;
 
 /**
- *
  * Class Application
  * @package ReactExpress
- *
  * @method Container middleware($name, $class, array $params = array())
  * @method Container method($name, $callback)
  * @method Container load($name, array $params = array())
- *
  * @method Router use(string $path,callable $action = null)
- * @method Router get(string $path, callable $action)
- * @method Router post(string $path, callable $action)
- * @method Router all(string $path, callable $action)
- * @method Router put(string $path, callable $action)
- * @method Router delete(string $path, callable $action)
- * @method Router head(string $path, callable $action)
- * @method Router options(string $path, callable $action)
- * @method Router patch(string $path, callable $action)
+ * @method Router get(string $path,callable $action)
+ * @method Router post(string $path,callable $action)
+ * @method Router all(string $path,callable $action)
+ * @method Router put(string $path,callable $action)
+ * @method Router delete(string $path,callable $action)
+ * @method Router head(string $path,callable $action)
+ * @method Router options(string $path,callable $action)
+ * @method Router patch(string $path,callable $action)
  * @method Router route(string $path)
  * @method Router router()
  */
@@ -65,7 +62,6 @@ class Application
         }
         return self::$instance;
     }
-
     /**
      * Application constructor.
      */
@@ -76,7 +72,6 @@ class Application
         $this->container = new Container;
         $this->config    = new Config;
     }
-
     /**
      * @param $name
      * @param $params
@@ -87,7 +82,7 @@ class Application
         if (method_exists($this, $name)) {
             return call_user_func_array([$this, $name], $params);
         }
-        if (method_exists($this->container, $name)) {
+        if (method_exists($this->container,$name)){
             return call_user_func_array([$this->container, $name], $params);
         }
         return call_user_func_array([$this->router, $name], $params);
@@ -171,4 +166,5 @@ class Application
         };
         $next();
     }
+
 }

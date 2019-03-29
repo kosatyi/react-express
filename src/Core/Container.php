@@ -49,7 +49,6 @@ class Container
         $this->loader     = new Loader;
         $this->dispatcher = new Dispatcher;
     }
-
     /**
      * @param $name
      * @param $params
@@ -71,7 +70,6 @@ class Container
             return $this->loader->load($name);
         }
     }
-
     /**
      * @param $prop
      * @return mixed
@@ -81,7 +79,6 @@ class Container
             return $this->{$prop};
         }
     }
-
     /**
      * @param $prop
      * @param $value
@@ -89,7 +86,6 @@ class Container
     public function __set( $prop , $value ){
 
     }
-
     /**
      * @return Config
      */
@@ -169,5 +165,4 @@ class Container
     {
         throw new HaltException($message, $code);
     }
-
 }

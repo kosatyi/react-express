@@ -68,7 +68,6 @@ class Route extends Model
         $this->action = $action;
         $this->parse();
     }
-
     /**
      * @param Container $app
      * @param callable $next
@@ -81,7 +80,6 @@ class Route extends Model
             $next();
         }
     }
-
     /**
      * @return bool
      */
@@ -89,7 +87,6 @@ class Route extends Model
     {
         return $this->action instanceof Router;
     }
-
     /**
      * @param string $path
      * @return null|string|string[]
@@ -98,7 +95,6 @@ class Route extends Model
     {
         return preg_replace($this->regex, '', $path);
     }
-
     /**
      * @param string $path
      * @return Route
@@ -109,7 +105,6 @@ class Route extends Model
         $route->params($path);
         return $route;
     }
-
     /**
      * @param string $path
      * @param string $method
@@ -125,7 +120,6 @@ class Route extends Model
         }
         return $stack;
     }
-
     /**
      * @return mixed
      */
@@ -135,7 +129,6 @@ class Route extends Model
         $method = $this->method;
         return isset($options[$method]) ? $options[$method] : $options['DEFAULT'];
     }
-
     /**
      *
      */
@@ -148,7 +141,6 @@ class Route extends Model
             $this->getRegexOptions()
         );
     }
-
     /**
      * @param string $path
      */
@@ -158,12 +150,11 @@ class Route extends Model
         $keys = $this->keys;
         $len = count($data);
         for ($i = 1; $i < $len; $i++) {
-            $key = $keys[$i - 1];
+            $key  = $keys[$i - 1];
             $prop = $key['name'];
             $this->attr($prop, $data[$i]);
         }
     }
-
     /**
      * @param string $path
      * @param string $method
@@ -176,5 +167,4 @@ class Route extends Model
         }
         return is_array(PathToRegexp::match($this->regex, $path));
     }
-
 }

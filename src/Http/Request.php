@@ -44,7 +44,6 @@ class Request extends Model
         $this->attr('authority', urldecode($uri->getAuthority()));
         $this->attr('protocol', $uri->getScheme());
         $this->attr('port', $uri->getPort());
-
         $this->attr('method', $this->request->getMethod());
         $this->attr('cookies', $this->request->getCookieParams());
         $this->attr('headers', $this->request->getHeaders());

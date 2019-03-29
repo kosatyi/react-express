@@ -8,7 +8,6 @@ namespace ReactExpress\Routing;
  */
 class Router
 {
-
     /**
      * @var array
      */
@@ -21,7 +20,6 @@ class Router
      * @var string
      */
     private $method = '';
-
     /**
      * @param string $name
      * @param array $params
@@ -30,22 +28,30 @@ class Router
     public function __call(string $name, array $params = [])
     {
         if (method_exists($this, $name)) {
-            return call_user_func_array([$this, $name], $params);
+            return call_user_func_array([$this,$name],$params);
+        } else {
+            $this->createRoute($name, ...$params);
         }
-        if (count($params) == 1) array_unshift($params, '/');
-        $this->routes[] = new Route($name, $params[0], $params[1]);
         return $this;
     }
-
+    /**
+     * @param string $method
+     * @param mixed ...$params
+     * @return $this
+     */
+    private function createRoute(string $method, ...$params){
+        if (count($params) == 1) array_unshift($params, '/');
+        $this->routes[] = new Route( $method , ...$params );
+        return $this;
+    }
     /**
      * @param string $path
      * @return Routes
      */
     public function route(string $path)
     {
-        return new Routes($this, $path);
+        return new Routes($this,$path);
     }
-
     /**
      * @return static
      */
@@ -53,7 +59,6 @@ class Router
     {
         return new static();
     }
-
     /**
      * @param string $path
      * @param string $method
@@ -69,7 +74,6 @@ class Router
         $stack = array_merge($middleware, $all, $routes);
         return $stack;
     }
-
     /**
      * @param string $path
      * @param string $method
@@ -90,5 +94,4 @@ class Router
         }
         return $stack;
     }
-
 }

@@ -14,7 +14,7 @@ $config->set('cookie.path','/');
 $config->set('cookie.secure',false);
 $config->set('cookie.httponly',false);
 
-$app->get('/',function($app){
+$app->get('/',function( $app ){
     $app->response->attr('request',$app->request->all());
     $app->response->attr('route',$app->route->all());
     $app->response->attr('config', $app->config() );
@@ -22,12 +22,16 @@ $app->get('/',function($app){
     $app->response->jsonData();
 });
 
-$app->get('/test', function ($app) {
-    $app->response->attr('request',$app->request->all());
-    $app->response->attr('route',$app->route->all());
-    $app->response->attr('session',$app->request->session()->all());
+$app->get('/test', function ( $app ) {
+    $app->response->attr('request', $app->request->all() );
+    $app->response->attr('route', $app->route->all() );
+    $app->response->attr('session',$app->request->session()->all() );
     $app->response->attr('config', $app->config() );
     $app->response->jsonData();
+});
+
+$app->post('/name',function($app){
+
 });
 
 $app->listen(9090, '127.0.0.1');

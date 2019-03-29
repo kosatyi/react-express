@@ -3,6 +3,7 @@
 namespace ReactExpress\Http;
 
 use ReactExpress\Core\Model;
+
 use WyriHaximus\React\Http\Middleware\Session as HttpSession;
 
 /**
@@ -10,12 +11,10 @@ use WyriHaximus\React\Http\Middleware\Session as HttpSession;
  * @package ReactExpress\Http
  */
 class Session extends Model {
-
     /**
      * @var HttpSession
      */
     private $session;
-
     /**
      * Session constructor.
      * @param HttpSession $session
@@ -24,7 +23,6 @@ class Session extends Model {
         $this->session = $session;
         $this->data($this->session->getContents());
     }
-
     /**
      * @return $this
      */
@@ -32,7 +30,6 @@ class Session extends Model {
         $this->session->begin();
         return $this;
     }
-
     /**
      * @return $this
      */
@@ -40,14 +37,12 @@ class Session extends Model {
         $this->session->end();
         return $this;
     }
-
     /**
      * @return bool
      */
     public function isActive(){
         return $this->session->isActive();
     }
-
     /**
      * @param $keys
      * @param null $value
