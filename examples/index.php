@@ -22,7 +22,7 @@ $app->get('/',function( $app ){
     $app->response->jsonData();
 });
 
-$app->get('/test', function ( $app ) {
+$app->get('/section/:module?/:category?/:page?', function ( $app ) {
     $app->response->attr('request', $app->request->all() );
     $app->response->attr('route', $app->route->all() );
     $app->response->attr('session',$app->request->session()->all() );

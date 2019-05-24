@@ -2,7 +2,12 @@
 
 namespace ReactExpress;
 
+use Exception;
+use Closure;
+use React\Promise\Promise;
+use React\Promise\PromiseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 use ReactExpress\Core\Config;
 use ReactExpress\Core\Container;
 use ReactExpress\Core\Runner;
@@ -11,7 +16,6 @@ use ReactExpress\Routing\Route;
 use ReactExpress\Http\Request;
 use ReactExpress\Http\Response;
 use ReactExpress\Exception\HaltException;
-
 /**
  * Class Application
  * @package ReactExpress
@@ -19,14 +23,14 @@ use ReactExpress\Exception\HaltException;
  * @method Container method($name, $callback)
  * @method Container load($name, array $params = array())
  * @method Router use(string $path,callable $action = null)
- * @method Router get(string $path,callable $action)
- * @method Router post(string $path,callable $action)
- * @method Router all(string $path,callable $action)
- * @method Router put(string $path,callable $action)
- * @method Router delete(string $path,callable $action)
- * @method Router head(string $path,callable $action)
- * @method Router options(string $path,callable $action)
- * @method Router patch(string $path,callable $action)
+ * @method Router get(string $path,callable $action = null)
+ * @method Router post(string $path,callable $action = null)
+ * @method Router all(string $path,callable $action = null)
+ * @method Router put(string $path,callable $action = null)
+ * @method Router delete(string $path,callable $action = null)
+ * @method Router head(string $path,callable $action = null)
+ * @method Router options(string $path,callable $action = null)
+ * @method Router patch(string $path,callable $action = null)
  * @method Router route(string $path)
  * @method Router router()
  */
@@ -71,6 +75,10 @@ class Application
         $this->router = new Router;
         $this->container = new Container;
         $this->config    = new Config;
+        $this->setup();
+    }
+    public function setup(){
+
     }
     /**
      * @param $name
@@ -106,9 +114,11 @@ class Application
     public function config(){
         return $this->config;
     }
+
     /**
      * @param ServerRequestInterface $httpRequest
-     * @return \React\Promise\Promise|\React\Promise\PromiseInterface
+     * @return Promise|PromiseInterface
+     * @throws Exception|HaltException
      */
     public function request(ServerRequestInterface $httpRequest)
     {
@@ -124,16 +134,14 @@ class Application
         try {
             $this->stack($stack);
         } catch (HaltException $e) {
-            $response->sendStatus($e->getCode(), $e->getMessage());
-        } catch (\Exception $e) {
-            $response->sendStatus(500, 'Server Error');
+            $this->error($e->getCode(),$e->getMessage());
         }
         return $response->promise();
     }
 
     /**
      * @param callable $fn
-     * @return \Closure
+     * @return Closure
      */
     private function next(callable $fn)
     {
@@ -145,7 +153,7 @@ class Application
     }
     /**
      * @param array $stack
-     * @throws \Exception|HaltException
+     * @throws Exception|HaltException
      */
     private function stack(array $stack)
     {
@@ -166,5 +174,4 @@ class Application
         };
         $next();
     }
-
 }

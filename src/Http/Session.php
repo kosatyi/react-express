@@ -3,7 +3,6 @@
 namespace ReactExpress\Http;
 
 use ReactExpress\Core\Model;
-
 use WyriHaximus\React\Http\Middleware\Session as HttpSession;
 
 /**

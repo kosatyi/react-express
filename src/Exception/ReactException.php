@@ -2,6 +2,8 @@
 
 namespace ReactExpress\Exception;
 
-class ReactException extends \Exception implements ThrowableInterface {
+use \Exception;
+
+class ReactException extends Exception implements ThrowableInterface {
 
 }
