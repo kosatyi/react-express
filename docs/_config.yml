@@ -14,7 +14,7 @@ javascript:
 
 baseurl: /react-express
 
-navigation: true
+navigation: false
 
 title: ReactExpress
 description: ReactPHP router written in express.js style
@@ -25,9 +25,3 @@ author:
   url: http://www.kosatyi.com/
 
 toolbar:
--
-  name: Docs
-  link: /docs/
--
-  name: Examples
-  link: /examples/
