@@ -17,8 +17,7 @@ baseurl: /react-express
 navigation: false
 
 title: ReactExpress
-description: ReactPHP router written in express.js style
-
+description: ReactPHP application router written in express.js style
 
 author:
   name: Stepan Kosatyi
