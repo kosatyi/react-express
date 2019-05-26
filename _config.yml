@@ -16,6 +16,8 @@ baseurl: /react-express
 
 navigation: false
 
+projects: true
+
 title: ReactExpress
 description: ReactPHP application router written in express.js style
 
