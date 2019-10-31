@@ -14,6 +14,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use ReactExpress\Application;
 use WyriHaximus\React\Http\Middleware\SessionMiddleware;
 
+use Closure;
+
 /**
  * Class Server
  * @package ReactExpress\Core
@@ -30,7 +32,7 @@ class Runner
      * @param Application|null $app
      * @return $this
      */
-    public function handler(Application $app = null)
+    public function handler(Application $app = null): self
     {
         $this->app = $app;
         return $this;
@@ -39,7 +41,8 @@ class Runner
     /**
      * @return SessionMiddleware
      */
-    private function session(){
+    private function session(): SessionMiddleware
+    {
         $config  = $this->app->config();
         $name    = $config->get('cookie.name','session');
         $cache   = new ArrayCache();
@@ -47,15 +50,16 @@ class Runner
             $config->get('cookie.expiration',7200),
             $config->get('cookie.path','/'),
             $config->get('cookie.domain',''),
-            $config->get('cookie.secure',false),
-            $config->get('cookie.httponly',false)
+            $config->get('cookie.secure',true),
+            $config->get('cookie.httponly',true)
         ]);
         return $session;
     }
     /**
-     * @return \Closure
+     * @return Closure
      */
-    private function application(){
+    private function application(): callable
+    {
         $handler = function (ServerRequestInterface $request) {
             return $this->app->request($request);
         };
@@ -66,7 +70,7 @@ class Runner
      * @param string $host
      * @param array $cert
      */
-    public function listen($port, $host = '127.0.0.1', $cert = [])
+    public function listen($port, $host = '127.0.0.1', $cert = []): void
     {
         $loop    = Factory::create();
         $session = $this->session();
@@ -76,11 +80,11 @@ class Runner
         if (count($cert) > 0) {
             $socket = new SecureSocketServer($socket, $loop, $cert);
         }
-        $http->on('error', function ($error) {
+        $http->on('error', static function ($error) {
             var_dump($error);
         });
         $http->listen($socket);
-        echo("Server running on {$socket->getAddress()}\n");
+        echo("Server running on {$host}:{$port}\n");
         $loop->run();
     }
 

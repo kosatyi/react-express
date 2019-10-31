@@ -2,14 +2,24 @@
 
 namespace ReactExpress\Core;
 
+use Exception;
+use ReactExpress\Exception\DispatcherException;
 use ReactExpress\Exception\HaltException;
 use ReactExpress\Http\Request;
 use ReactExpress\Http\Response;
 use ReactExpress\Routing\Route;
+use ReflectionClass;
 
 /**
  * Class Container
  * @package ReactExpress\Core
+ * @method void error($code,$message)ss
+ * @property Response $response
+ * @property Request $request
+ * @property Route $route
+ * @property Config $config
+ * @property Loader $loader
+ * @property Dispatcher $dispatcher
  */
 class Container
 {
@@ -40,7 +50,6 @@ class Container
      * @var Config
      */
     private $config;
-
     /**
      * Container constructor.
      */
@@ -52,10 +61,10 @@ class Container
     /**
      * @param $name
      * @param $params
-     * @return mixed|null|object|\ReflectionClass
+     * @return mixed|null|object|ReflectionClass
      * @throws HaltException
-     * @throws \Exception
-     * @throws \ReactExpress\Exception\DispatcherException
+     * @throws Exception
+     * @throws DispatcherException
      */
     public function __call($name, $params)
     {
@@ -69,15 +78,18 @@ class Container
         if ($this->loader->get($name)) {
             return $this->loader->load($name);
         }
+        return null;
     }
     /**
      * @param $prop
      * @return mixed
      */
-    public function __get( $prop ){
+    public function __get( $prop )
+    {
         if( property_exists($this,$prop) ){
             return $this->{$prop};
         }
+        return null;
     }
     /**
      * @param $prop
@@ -87,16 +99,26 @@ class Container
 
     }
     /**
+     * @param $prop
+     * @return bool
+     */
+    public function __isset( $prop )
+    {
+        return false;
+    }
+    /**
      * @return Config
      */
-    public function config(){
+    public function config(): Config
+    {
         return $this->config;
     }
     /**
      * @param Route $route
      * @return $this
      */
-    public function setRoute(Route $route){
+    public function setRoute(Route $route): self
+    {
         $this->route = $route;
         return $this;
     }
@@ -104,7 +126,8 @@ class Container
      * @param Config $config
      * @return $this
      */
-    public function setConfig(Config $config){
+    public function setConfig(Config $config): self
+    {
         $this->config = $config;
         return $this;
     }
@@ -112,7 +135,8 @@ class Container
      * @param Response $response
      * @return $this
      */
-    public function setResponse(Response $response){
+    public function setResponse(Response $response): self
+    {
         $this->response = $response;
         return $this;
     }
@@ -120,7 +144,8 @@ class Container
      * @param Request $request
      * @return $this
      */
-    public function setRequest(Request $request){
+    public function setRequest(Request $request): self
+    {
         $this->request = $request;
         return $this;
     }
@@ -130,7 +155,7 @@ class Container
      * @param array $params
      * @return $this
      */
-    public function middleware($name, $class, array $params = array())
+    public function middleware($name, $class, array $params = []): self
     {
         if (!method_exists($this, $name)) {
             $this->loader->register($name, $class, $params);
@@ -140,19 +165,21 @@ class Container
     /**
      * @param $name
      * @param $callback
+     * @return Container
      */
-    public function method($name, $callback)
+    public function method($name, $callback): self
     {
         if (!method_exists($this, $name)) {
             $this->dispatcher->set($name, $callback);
         }
+        return $this;
     }
     /**
      * @param $name
      * @param array $params
-     * @return mixed|null|object|\ReflectionClass
+     * @return mixed|null|object|ReflectionClass
      */
-    public function load($name, array $params = array())
+    public function load($name, array $params = [])
     {
         return $this->loader->load($name, $params);
     }
@@ -161,7 +188,7 @@ class Container
      * @param string $message
      * @throws HaltException
      */
-    public function halt(int $code, string $message = '')
+    public function halt(int $code, string $message = ''): void
     {
         throw new HaltException($message, $code);
     }

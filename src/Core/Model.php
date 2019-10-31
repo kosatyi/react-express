@@ -2,23 +2,23 @@
 
 namespace ReactExpress\Core;
 
+use JsonSerializable;
+use Serializable;
+
 /**
  * Class Model
  * @package ReactExpress\Core
  */
-class Model implements \JsonSerializable, \Serializable
+class Model implements JsonSerializable, Serializable
 {
-
     /**
      *
      */
-    const SEPARATOR = '.';
-
+    protected const SEPARATOR = '.';
     /**
      * @var array
      */
     private $__data__ = [];
-
     /**
      * @param $key
      * @param $value
@@ -27,7 +27,14 @@ class Model implements \JsonSerializable, \Serializable
     {
 
     }
-
+    /**
+     * @param $key
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return false;
+    }
     /**
      * @param $key
      */
@@ -38,13 +45,13 @@ class Model implements \JsonSerializable, \Serializable
 
     /**
      * @param $path
-     * @return array|mixed|strlen
+     * @return array|mixed
      */
     private function path($path)
     {
         $parts = array_filter(explode(static::SEPARATOR, (string)$path), 'strlen');
-        $parts = array_reduce($parts, function ($a, $v) {
-            $a[] = ctype_digit($v) ? intval($v) : $v;
+        $parts = array_reduce($parts, static function ($a, $v) {
+            $a[] = ctype_digit($v) ? (int)$v : $v;
             return $a;
         }, []);
         return $parts;
@@ -57,7 +64,7 @@ class Model implements \JsonSerializable, \Serializable
      */
     public function attr($keys, $value = null)
     {
-        $getter = func_num_args() == 1;
+        $getter = func_num_args() === 1;
         if (is_string($keys)) {
             $keys = $this->path($keys);
         }
@@ -85,12 +92,10 @@ class Model implements \JsonSerializable, \Serializable
         }
         if (is_callable($copy)) {
             $copy($value);
+        } else if($value === null){
+            unset($copy);
         } else {
-            if(is_null($value)){
-                unset($copy);
-            } else {
-                $copy = $value;
-            }
+            $copy = $value;
         }
         return $this;
     }
@@ -99,7 +104,7 @@ class Model implements \JsonSerializable, \Serializable
      * @param array $data
      * @return $this
      */
-    public function data(array $data = [])
+    public function data(array $data = []): self
     {
         $this->__data__ = $data;
         return $this;
@@ -108,7 +113,7 @@ class Model implements \JsonSerializable, \Serializable
     /**
      * @return array
      */
-    public function all()
+    public function all(): array
     {
         return $this->__data__;
     }
@@ -116,7 +121,7 @@ class Model implements \JsonSerializable, \Serializable
     /**
      * @return string
      */
-    public function serialize()
+    public function serialize(): string
     {
         return serialize($this->__data__);
     }
@@ -124,11 +129,10 @@ class Model implements \JsonSerializable, \Serializable
     /**
      * @param string $data
      */
-    public function unserialize($data)
+    public function unserialize($data): void
     {
-        $this->__data__ = unserialize($data);
+        $this->__data__ = unserialize($data, ['allowed_classes'=>false]);
     }
-
     /**
      * @return array|mixed
      */
@@ -136,5 +140,4 @@ class Model implements \JsonSerializable, \Serializable
     {
         return $this->__data__;
     }
-
 }

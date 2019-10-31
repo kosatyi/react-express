@@ -1,10 +1,7 @@
 <?php
-
 namespace ReactExpress\Http;
-
 use ReactExpress\Core\Model;
 use WyriHaximus\React\Http\Middleware\Session as HttpSession;
-
 /**
  * Class Session
  * @package ReactExpress\Http
@@ -25,21 +22,24 @@ class Session extends Model {
     /**
      * @return $this
      */
-    public function start(){
+    public function start(): self
+    {
         $this->session->begin();
         return $this;
     }
     /**
      * @return $this
      */
-    public function end(){
+    public function end(): self
+    {
         $this->session->end();
         return $this;
     }
     /**
      * @return bool
      */
-    public function isActive(){
+    public function isActive(): bool
+    {
         return $this->session->isActive();
     }
     /**
@@ -48,9 +48,11 @@ class Session extends Model {
      * @return $this|array|mixed|null
      */
     public function attr($keys, $value = null){
-        if(!$this->isActive()) $this->start();
+        if(!$this->isActive()) {
+            $this->start();
+        }
         $this->data($this->session->getContents());
-        $getter = func_num_args() == 1;
+        $getter = func_num_args() === 1;
         if($getter){
             $result = parent::attr($keys);
         } else {

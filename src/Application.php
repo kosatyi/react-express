@@ -21,6 +21,7 @@ use ReactExpress\Exception\HaltException;
  * @package ReactExpress
  * @method Container middleware($name, $class, array $params = array())
  * @method Container method($name, $callback)
+ * @method Container error($code, $message)
  * @method Container load($name, array $params = array())
  * @method Router use(string $path,callable $action = null)
  * @method Router get(string $path,callable $action = null)
@@ -39,7 +40,7 @@ class Application
     /**
      * @var null
      */
-    protected static $instance = null;
+    protected static $instance;
     /**
      * @var Container
      */
@@ -77,7 +78,11 @@ class Application
         $this->config    = new Config;
         $this->setup();
     }
-    public function setup(){
+    /**
+     *
+     */
+    public function setup(): void
+    {
 
     }
     /**
@@ -102,19 +107,19 @@ class Application
      * @param array $cert
      * @return $this
      */
-    public function listen($port, $host, array $cert = [])
+    public function listen($port, $host, array $cert = []): self
     {
         $this->runner->handler($this);
-        $this->runner->listen($port, $host, $cert);
+        $this->runner->listen($port,$host,$cert);
         return $this;
     }
     /**
      * @return Config
      */
-    public function config(){
+    public function config(): Config
+    {
         return $this->config;
     }
-
     /**
      * @param ServerRequestInterface $httpRequest
      * @return Promise|PromiseInterface
@@ -134,7 +139,7 @@ class Application
         try {
             $this->stack($stack);
         } catch (HaltException $e) {
-            $this->error($e->getCode(),$e->getMessage());
+            $container->error($e->getCode(),$e->getMessage());
         }
         return $response->promise();
     }
@@ -143,10 +148,12 @@ class Application
      * @param callable $fn
      * @return Closure
      */
-    private function next(callable $fn)
+    private function next(callable $fn): callable
     {
-        return function (...$args) use ($fn) {
-            if ($fn === null) return;
+        return static function (...$args) use ($fn) {
+            if ($fn === null) {
+                return;
+            }
             $fn(...$args);
             $fn = null;
         };
@@ -155,18 +162,18 @@ class Application
      * @param array $stack
      * @throws Exception|HaltException
      */
-    private function stack(array $stack)
+    private function stack(array $stack): void
     {
         $index = 0;
-        $stack[] = new Route('','',function( $app ){
-            $app->halt(404,'Not Found');
+        $stack[] = new Route('','',static function( Container $app ){
+            $app->error(404,'Not Found');
         });
         $next = function () use (&$index, &$stack, &$next) {
-            if ($index == count($stack)) {
+            if ($index === count($stack)) {
                 return;
             }
             $route = $stack[$index++];
-            $callback = $this->next(function () use (&$next) {
+            $callback = $this->next(static function () use (&$next) {
                 $next();
             });
             $this->container->setRoute($route);

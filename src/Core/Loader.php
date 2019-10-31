@@ -3,6 +3,9 @@
 namespace ReactExpress\Core;
 
 
+use Exception;
+use ReflectionClass;
+
 /**
  * Class Loader
  * @package ReactExpress\Core
@@ -26,7 +29,7 @@ class Loader
      * @param array $params
      * @param callable|null $callback
      */
-    public function register(string $name, $class , array $params = [] , callable $callback = null)
+    public function register(string $name, $class , array $params = [] , callable $callback = null): void
     {
         unset($this->instances[$name]);
         $this->classes[$name] = [$class, $params, $callback];
@@ -35,7 +38,7 @@ class Loader
     /**
      * @param $name
      */
-    public function unregister($name)
+    public function unregister($name): void
     {
         unset($this->classes[$name]);
     }
@@ -43,15 +46,15 @@ class Loader
     /**
      * @param $name
      * @param array|null $arguments
-     * @return mixed|null|object|\ReflectionClass
+     * @return mixed|null|object|ReflectionClass
      */
     public function load($name, array $arguments = null)
     {
         $instance = null;
         if ($class = $this->get($name)) {
             $exists = isset($this->instances[$name]);
-            $shared = is_null($arguments);
-            list($class, $params, $callback) = $class;
+            $shared = $arguments === null;
+            [$class, $params, $callback] = $class;
             if ($shared) {
                 if ($exists) {
                     $instance = $this->getInstance($name);
@@ -75,13 +78,12 @@ class Loader
      */
     public function getInstance($name)
     {
-        return isset($this->instances[$name]) ? $this->instances[$name] : null;
+        return $this->instances[$name] ?? null;
     }
-
     /**
      * @param $class
      * @param array $params
-     * @return mixed|null|object|\ReflectionClass
+     * @return mixed|null|object|ReflectionClass
      */
     public function newInstance($class, array $params = [])
     {
@@ -89,9 +91,9 @@ class Loader
             return call_user_func_array($class, $params);
         }
         try {
-            $class = new \ReflectionClass($class);
+            $class = new ReflectionClass($class);
             $class = $class->newInstanceArgs($params);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $class = null;
         }
         return $class;
@@ -103,13 +105,13 @@ class Loader
      */
     public function get($name)
     {
-        return isset($this->classes[$name]) ? $this->classes[$name] : null;
+        return $this->classes[$name] ?? null;
     }
 
     /**
      *
      */
-    public function reset()
+    public function reset(): void
     {
         $this->classes = [];
         $this->instances = [];

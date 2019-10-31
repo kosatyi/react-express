@@ -8,7 +8,8 @@ class Config extends Model {
      * @param $value
      * @return $this
      */
-    public function set($keys,$value){
+    public function set($keys,$value): self
+    {
         $this->attr($keys,$value);
         return $this;
     }
@@ -17,9 +18,12 @@ class Config extends Model {
      * @param null $default
      * @return $this|array|mixed|null
      */
-    public function get($keys,$default=null){
+    public function get($keys,$default=null)
+    {
         $value = $this->attr($keys);
-        if(is_null($value)) return $default;
+        if($value === null){
+            return $default;
+        }
         return $value;
     }
 }

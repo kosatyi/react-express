@@ -5,8 +5,6 @@ namespace ReactExpress\Http;
 use Psr\Http\Message\ServerRequestInterface;
 use ReactExpress\Core\Model;
 use WyriHaximus\React\Http\Middleware\SessionMiddleware;
-use WyriHaximus\React\Http\Middleware\Session as HttpSession;
-
 /**
  * Class Request
  * @package ReactExpress\Http
@@ -34,10 +32,9 @@ class Request extends Model
     /**
      *
      */
-    private function setData(){
-
+    private function setData(): void
+    {
         $uri = $this->request->getUri();
-
         $this->attr('uri', (string) $uri);
         $this->attr('path', urldecode($uri->getPath()));
         $this->attr('host', urldecode($uri->getHost()));
@@ -50,17 +47,20 @@ class Request extends Model
         $this->attr('query', $this->request->getQueryParams());
         $this->attr('data', $this->request->getParsedBody());
         $this->attr('files', $this->request->getUploadedFiles());
-
     }
-    private function setSession(){
+    /**
+     *
+     */
+    private function setSession(): void
+    {
         $session = $this->request->getAttribute(SessionMiddleware::ATTRIBUTE_NAME);
         $this->session = new Session( $session );
     }
     /**
-     * @return HttpSession;
+     * @return Session
      */
-    public function session(){
+    public function session(): Session
+    {
         return $this->session;
     }
-
 }

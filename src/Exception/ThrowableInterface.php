@@ -2,6 +2,8 @@
 
 namespace ReactExpress\Exception;
 
-interface ThrowableInterface extends \Throwable {
+use \Throwable;
+
+interface ThrowableInterface extends Throwable {
 
 }

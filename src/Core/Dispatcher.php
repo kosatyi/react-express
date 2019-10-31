@@ -2,6 +2,7 @@
 
 namespace ReactExpress\Core;
 
+use Exception;
 use ReactExpress\Exception\DispatcherException;
 use ReactExpress\Exception\HaltException;
 
@@ -19,7 +20,7 @@ class Dispatcher
      * @param string $name
      * @param array $params
      * @return mixed|null
-     * @throws \Exception|DispatcherException|HaltException
+     * @throws Exception|DispatcherException|HaltException
      */
     public function run(string $name, array $params = [])
     {
@@ -35,7 +36,7 @@ class Dispatcher
      * @param string $name
      * @param callable $callback
      */
-    public function set(string $name, callable $callback)
+    public function set(string $name, callable $callback): void
     {
         $this->callbacks[$name] = $callback;
     }
@@ -53,7 +54,7 @@ class Dispatcher
      * @param string $name
      * @return bool
      */
-    public function has(string $name)
+    public function has(string $name): bool
     {
         return isset($this->callbacks[$name]);
     }
@@ -68,8 +69,7 @@ class Dispatcher
     {
         if (is_callable($callback)) {
             return call_user_func_array($callback, $params);
-        } else {
-            throw new DispatcherException('Invalid callback specified.');
         }
+        throw new DispatcherException('Invalid callback specified.');
     }
 }

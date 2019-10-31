@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "ext-json": "*",
         "react/event-loop": "^0.4.3",
         "react/http": "^0.8.1",
         "wyrihaximus/react-http-middleware-session": "^1.0",
@@ -17,7 +18,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^6.5",
-        "satooshi/php-coveralls": "^2.0"
+        "php-coveralls/php-coveralls": "^2.0"
     },
     "autoload": {
         "psr-4": {

@@ -3,7 +3,6 @@
 namespace ReactExpress\Routing;
 
 use ReactExpress\Core\Container;
-use ReactExpress\Application;
 use ReactExpress\Core\Model;
 use ReactExpress\Util\PathToRegexp;
 
@@ -72,10 +71,10 @@ class Route extends Model
      * @param Container $app
      * @param callable $next
      */
-    public function run(Container $app, callable $next)
+    public function run(Container $app, callable $next): void
     {
         if (is_callable($this->action)) {
-            call_user_func_array($this->action, [$app, $next]);
+            call_user_func($this->action, $app, $next);
         } else {
             $next();
         }
@@ -83,7 +82,7 @@ class Route extends Model
     /**
      * @return bool
      */
-    public function isRouter()
+    public function isRouter(): bool
     {
         return $this->action instanceof Router;
     }
@@ -99,7 +98,7 @@ class Route extends Model
      * @param string $path
      * @return Route
      */
-    private function withParams(string $path = '')
+    private function withParams(string $path = ''): Route
     {
         $route = clone $this;
         $route->params($path);

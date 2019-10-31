@@ -7,8 +7,7 @@ class PathToRegexp {
 	private static function getRegexpSource($regexp) {
 		$delimiter = substr($regexp, 0, 1);
 		$endDelimiterPos = strrpos($regexp, $delimiter);
-		$source = substr($regexp, 1, $endDelimiterPos - 1);
-		return $source;
+		return substr($regexp, 1, $endDelimiterPos - 1);
 	}
 
 	/**
@@ -23,24 +22,20 @@ class PathToRegexp {
 	* @return {RegExp}
 	*/
 	public static function convert($path, &$keys = array(), $options = array()) {
-		$strict = is_array($options) && array_key_exists("strict", $options) ? $options["strict"] : false;
-		$end = is_array($options) && array_key_exists("end", $options) ? $options["end"] : true;
-		$flags = is_array($options) && !empty($options["sensitive"]) ? "" : "i";
+		$strict = is_array($options) && array_key_exists('strict', $options) ? $options['strict'] : false;
+		$end = is_array($options) && array_key_exists('end', $options) ? $options['end'] : true;
+		$flags = is_array($options) && !empty($options['sensitive']) ? '' : 'i';
 		$index = 0;
-
 		if(is_array($path)) {
 			// Map array parts into regexps and return their source. We also pass
 			// the same keys and options instance into every generation to get
 			// consistent matching groups before we join the sources together.
-
-			$path = array_map(function($value) use(&$keys, &$options) {
+			$path = array_map(static function($value) use(&$keys, &$options) {
 				return self::getRegexpSource(self::convert($value, $keys, $options));
 			}, $path);
-
 			// Generate a new regexp instance by joining all the parts together.
-			return '/(?:' . implode("|", $path) . ')/' . $flags;
+			return '/(?:' . implode('|', $path) . ')/' . $flags;
 		}
-
 		$pathRegexps = array(
 			// Match already escaped characters that would otherwise incorrectly appear
 			// in future matches. This allows the user to escape special characters that
@@ -56,9 +51,8 @@ class PathToRegexp {
 			'([.+*?=^!:${}()[\\]|\\/])'
 		);
 		$pathRegexp = "/" . implode("|", $pathRegexps) . "/";
-
 		// Alter the path string into a usable regexp.
-		$path = preg_replace_callback($pathRegexp, function($matches) use(&$keys, &$index) {
+		$path = preg_replace_callback($pathRegexp, static function($matches) use(&$keys, &$index) {
 			if(count($matches) > 1) {
 				$escaped = $matches[1];
 			}
@@ -82,52 +76,43 @@ class PathToRegexp {
 			if(count($matches) > 7) {
 				$escape = $matches[7];
 			}
-
 			// Avoiding re-escaping escaped characters.
 			if(!empty($escaped)) {
 				return $escaped;
 			}
-
 			// Escape regexp special characters.
 			if(!empty($escape)) {
 				return '\\' . $escape;
 			}
-
 			$repeat   = $suffix === '+' || $suffix === '*';
 			$optional = $suffix === '?' || $suffix === '*';
-
-			array_push($keys, array(
-				"name" => (string) (!empty($key) ? $key : $index++),
-				"delimiter" => !empty($prefix) ? $prefix : '/',
-				"optional" => $optional,
-				"repeat" => $repeat
-			));
-
+			$keys[]   = [
+                'name' => (string)(!empty($key) ? $key : $index++),
+                'delimiter' => !empty($prefix) ? $prefix : '/',
+                'optional' => $optional,
+                'repeat' => $repeat
+            ];
 			// Escape the prefix character.
 			$prefix = !empty($prefix) ? '\\' . $prefix : '';
-
 			// Match using the custom capturing group, or fallback to capturing
 			// everything up to the next slash (or next period if the param was
 			// prefixed with a period).
 			$subject = (!empty($capture) ? $capture : (!empty($group) ? $group : '[^' . (!empty($prefix) ? $prefix : '\\/') . ']+?'));
 			$capture = preg_replace('/([=!:$\/()])/', '\1', $subject);
-
 			// Allow parameters to be repeated more than once.
 			if(!empty($repeat)) {
-				$capture = $capture . '(?:' . $prefix . $capture . ')*';
+				$capture .= '(?:' . $prefix . $capture . ')*';
 			}
-
 			// Allow a parameter to be optional.
 			if(!empty($optional)) {
 				return '(?:' . $prefix . '(' . $capture . '))?';
 			}
-
 			// Basic parameter support.
 			return $prefix . '(' . $capture . ')';
 		}, $path);
 
 		// Check whether the path ends in a slash as it alters some match behaviour.
-		$endsWithSlash = substr($path, -1, 1) === "/";
+		$endsWithSlash = substr($path, -1, 1) === '/';
 
 		// In non-strict mode we allow an optional trailing slash in the match. If
 		// the path to match already ended with a slash, we need to remove it for
@@ -149,7 +134,7 @@ class PathToRegexp {
 
 	public static function match($regexp, $route) {
 		preg_match_all($regexp, $route, $matches);
-		if(count($matches) == 0) {
+		if(count($matches) === 0) {
 			$matches = null;
 		} else {
 			$areValuesNull = true;
