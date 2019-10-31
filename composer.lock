@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "534fabe2f8a4eff77f87e2a942b6d658",
+    "content-hash": "694c08c5bdbf983f80ca973ff1dbd344",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -165,6 +165,43 @@
                 "yml"
             ],
             "time": "2018-08-22T14:18:52+00:00"
+        },
+        {
+            "name": "kosatyi/datamodel",
+            "version": "v0.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kosatyi/datamodel.git",
+                "reference": "7bf12c7db5ebee99704935835601d4f5a78d96af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kosatyi/datamodel/zipball/7bf12c7db5ebee99704935835601d4f5a78d96af",
+                "reference": "7bf12c7db5ebee99704935835601d4f5a78d96af",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-json": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Kosatyi\\DataModel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stepan Kosatyi",
+                    "email": "stepan@kosatyi.com"
+                }
+            ],
+            "homepage": "https://kosatyi.com/datamodel/",
+            "time": "2019-10-31T12:50:09+00:00"
         },
         {
             "name": "psr/http-message",

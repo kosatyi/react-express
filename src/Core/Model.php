@@ -131,7 +131,7 @@ class Model implements JsonSerializable, Serializable
      */
     public function unserialize($data): void
     {
-        $this->__data__ = unserialize($data, ['allowed_classes'=>false]);
+        $this->__data__ = unserialize( $data , [ 'allowed_classes' => false ]);
     }
     /**
      * @return array|mixed

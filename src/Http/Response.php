@@ -54,7 +54,6 @@ class Response extends Model
     {
         return $this->deferred->promise();
     }
-
     /**
      * @param string $name
      * @param string $value
