@@ -18,6 +18,7 @@ navigation: false
 
 projects: true
 
+brand: react-express
 title: ReactExpress
 description: ReactPHP application router written in express.js style
 
