@@ -54,13 +54,8 @@ class Request extends Model
     private function setSession(): void
     {
         $session = $this->request->getAttribute(SessionMiddleware::ATTRIBUTE_NAME);
-        $this->session = new Session( $session );
-    }
-    /**
-     * @return Session
-     */
-    public function session(): Session
-    {
-        return $this->session;
+        if( $session ) {
+            $this->attr('session', new Session( $session ) );
+        }
     }
 }

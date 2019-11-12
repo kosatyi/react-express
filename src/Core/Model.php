@@ -74,11 +74,11 @@ class Model implements JsonSerializable, Serializable
             $copy =& $this->__data__;
         }
         while (count($keys)) {
-            if ($copy instanceof $this) {
-                return $copy->attr($keys, $value);
+            if ($copy instanceof self) {
+                return $copy->attr($keys,$value);
             }
             if (is_callable($copy)) {
-                return $copy($keys, $value);
+                return $copy($keys,$value);
             }
             $key = array_shift($keys);
             if (is_object($copy)) {

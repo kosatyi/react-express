@@ -13,9 +13,9 @@ class Session extends Model {
     private $session;
     /**
      * Session constructor.
-     * @param HttpSession $session
+     * @param $session
      */
-    public function __construct(HttpSession $session ){
+    public function __construct( $session ){
         $this->session = $session;
         $this->data($this->session->getContents());
     }
@@ -52,14 +52,8 @@ class Session extends Model {
             $this->start();
         }
         $this->data($this->session->getContents());
-        $getter = func_num_args() === 1;
-        if($getter){
-            $result = parent::attr($keys);
-        } else {
-            parent::attr($keys,$value);
-            $this->session->setContents($this->all());
-            $result = $this;
-        }
+        $result = parent::attr($keys,$value);
+        $this->session->setContents($this->all());
         return $result;
     }
 }

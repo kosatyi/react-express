@@ -13,7 +13,7 @@ use ReflectionClass;
 /**
  * Class Container
  * @package ReactExpress\Core
- * @method void error($code,$message)ss
+ * @method void error($code,$message)
  * @property Response $response
  * @property Request $request
  * @property Route $route
@@ -155,7 +155,7 @@ class Container
      * @param array $params
      * @return $this
      */
-    public function middleware($name, $class, array $params = []): self
+    public function register($name, $class, array $params = []): self
     {
         if (!method_exists($this, $name)) {
             $this->loader->register($name, $class, $params);

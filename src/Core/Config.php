@@ -26,4 +26,8 @@ class Config extends Model {
         }
         return $value;
     }
+    public function load(): void
+    {
+
+    }
 }

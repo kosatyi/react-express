@@ -3,8 +3,8 @@
 require_once '../vendor/autoload.php';
 
 use ReactExpress\Application;
-
 use ReactExpress\Core\Container;
+use ReactExpress\Middleware\Session;
 
 $app = Application::instance();
 
@@ -20,23 +20,37 @@ $app->method('error',static function($app,$code,$message){
     $app->response->send(sprintf('%s - %s',$code,$message));
 });
 
+$app->method('render',static function($app,$template,$data=[]){
+
+});
+
+$app->use(static function(Container $app, $next){
+    $session = $app->request->attr('session');
+    $session->start();
+    $next();
+});
+
 $app->get('/',static function( Container $app ){
-    $app->request->session()->attr('foo','bar');
     $app->response->attr('request',$app->request->all());
     $app->response->attr('route',$app->route->all());
     $app->response->attr('config', $app->config() );
-    $app->response->attr('session', $app->request->session()->all() );
+    $app->response->jsonData();
+});
+
+$app->get('/:date(\d{10})-:alias([\w-]+)',static function ( Container $app ) {
+    $app->response->attr('request',$app->request->all());
+    $app->response->attr('route',$app->route->all());
+    $app->response->attr('config', $app->config() );
     $app->response->jsonData();
 });
 
 $app->get('/dashboard/:module?/:category?/:page?',static function ( Container $app ) {
     $app->response->attr('request', $app->request->all() );
     $app->response->attr('route', $app->route->all() );
-    $app->response->attr('session', $app->request->session()->all() );
     $app->response->attr('config', $app->config() );
     $app->response->jsonData();
 });
 
-$router = $app->router();
+$app->server()->middleware(Session::class);
 
-$app->listen(9095, '127.0.0.1');
+$app->server()->listen(9095);

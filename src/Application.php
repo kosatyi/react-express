@@ -9,8 +9,9 @@ use React\Promise\PromiseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 use ReactExpress\Core\Config;
+use ReactExpress\Core\Loader;
+use ReactExpress\Core\Server;
 use ReactExpress\Core\Container;
-use ReactExpress\Core\Runner;
 use ReactExpress\Routing\Router;
 use ReactExpress\Routing\Route;
 use ReactExpress\Http\Request;
@@ -19,7 +20,7 @@ use ReactExpress\Exception\HaltException;
 /**
  * Class Application
  * @package ReactExpress
- * @method Container middleware($name, $class, array $params = array())
+ * @method Container register($name, $class, array $params = array())
  * @method Container method($name, $callback)
  * @method Container error($code, $message)
  * @method Container load($name, array $params = array())
@@ -50,9 +51,9 @@ class Application
      */
     private $router;
     /**
-     * @var Runner
+     * @var Server
      */
-    private $runner;
+    private $server;
     /**
      * @var Config
      */
@@ -72,7 +73,7 @@ class Application
      */
     public function __construct()
     {
-        $this->runner = new Runner;
+        $this->server = new Server;
         $this->router = new Router;
         $this->container = new Container;
         $this->config    = new Config;
@@ -100,18 +101,25 @@ class Application
         }
         return call_user_func_array([$this->router, $name], $params);
     }
-
     /**
      * @param $port
      * @param $host
      * @param array $cert
      * @return $this
      */
-    public function listen($port, $host, array $cert = []): self
+    public function listen($port, $host = '127.0.0.1', array $cert = []): self
     {
-        $this->runner->handler($this);
-        $this->runner->listen($port,$host,$cert);
+        $server = $this->server();
+        $server->certificate($cert);
+        $server->listen($port,$host);
         return $this;
+    }
+    /**
+     * @return Server
+     */
+    public function server(): Server
+    {
+        return $this->server->handler($this);
     }
     /**
      * @return Config
