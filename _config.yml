@@ -1,22 +1,9 @@
-plugins:
-  - jekyll-seo-tag
-
-port: 4001
-
-styles:
-
 remote_theme: kosatyi/sjt
 
-exclude:
-  - vendor
-
-javascript:
+navigation: false
+projects: true
 
 baseurl: /react-express
-
-navigation: false
-
-projects: true
 
 brand: react-express
 title: ReactExpress
@@ -25,6 +12,7 @@ analytics: UA-37629144-1
 
 author:
   name: Stepan Kosatyi
+<<<<<<< HEAD
   url: http://www.kosatyi.com/
 
 toolbar:
@@ -32,3 +20,6 @@ toolbar:
 
 
 
+=======
+  url: https://kosatyi.com/
+>>>>>>> 9d0054a34f49604b1664676327d7b87e0d768355
