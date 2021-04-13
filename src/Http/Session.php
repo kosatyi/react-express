@@ -1,7 +1,12 @@
 <?php
 namespace ReactExpress\Http;
+
 use ReactExpress\Core\Model;
+
+use Psr\Http\Message\ServerRequestInterface;
 use WyriHaximus\React\Http\Middleware\Session as HttpSession;
+use WyriHaximus\React\Http\Middleware\SessionMiddleware;
+
 /**
  * Class Session
  * @package ReactExpress\Http
@@ -13,11 +18,23 @@ class Session extends Model {
     private $session;
     /**
      * Session constructor.
-     * @param $session
+     * @param ServerRequestInterface $request
      */
-    public function __construct( $session ){
-        $this->session = $session;
-        $this->data($this->session->getContents());
+    public function __construct( ServerRequestInterface $request ){
+        $this->session = $request->getAttribute(SessionMiddleware::ATTRIBUTE_NAME );
+        $this->data( $this->session->getContents() );
+    }
+    /**
+     * @param $name
+     * @param $params
+     * @return mixed|null
+     */
+    public function __call($name, $params)
+    {
+        if ( $this->session && method_exists($this, $name) ) {
+            return call_user_func_array([$this,$name],$params);
+        }
+        return null;
     }
     /**
      * @return $this
@@ -48,12 +65,9 @@ class Session extends Model {
      * @return $this|array|mixed|null
      */
     public function attr($keys, $value = null){
-        if(!$this->isActive()) {
-            $this->start();
-        }
-        $this->data($this->session->getContents());
+        $this->data( $this->session->getContents() );
         $result = parent::attr($keys,$value);
-        $this->session->setContents($this->all());
+        $this->session->setContents( $this->all() );
         return $result;
     }
 }

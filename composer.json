@@ -23,7 +23,8 @@
     },
     "autoload": {
         "psr-4": {
-            "ReactExpress\\": "src/"
+            "ReactExpress\\": "src/",
+            "App\\": "app/"
         }
     }
 }

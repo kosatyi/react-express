@@ -16,10 +16,6 @@ class Request extends Model
      */
     private $request;
     /**
-     * @var mixed
-     */
-    private $session;
-    /**
      * Request constructor.
      * @param ServerRequestInterface $request
      */
@@ -27,7 +23,6 @@ class Request extends Model
     {
         $this->request = $request;
         $this->setData();
-        $this->setSession();
     }
     /**
      *
@@ -47,15 +42,5 @@ class Request extends Model
         $this->attr('query', $this->request->getQueryParams());
         $this->attr('data', $this->request->getParsedBody());
         $this->attr('files', $this->request->getUploadedFiles());
-    }
-    /**
-     *
-     */
-    private function setSession(): void
-    {
-        $session = $this->request->getAttribute(SessionMiddleware::ATTRIBUTE_NAME);
-        if( $session ) {
-            $this->attr('session', new Session( $session ) );
-        }
     }
 }

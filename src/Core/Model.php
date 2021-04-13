@@ -42,10 +42,9 @@ class Model implements JsonSerializable, Serializable
     {
 
     }
-
     /**
      * @param $path
-     * @return array|mixed
+     * @return mixed
      */
     private function path($path)
     {

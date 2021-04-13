@@ -5,16 +5,25 @@ namespace ReactExpress\Middleware;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Cache\ArrayCache;
 use ReactExpress\Core\Middleware;
+
+use ReactExpress\Http\Session as SessionModel;
 use WyriHaximus\React\Http\Middleware\SessionMiddleware;
 
 class Session extends Middleware
 {
-
-    protected function callback(ServerRequestInterface $request, callable $next = null)
+    /**
+     * @param ServerRequestInterface $request
+     * @param callable $next
+     * @return mixed
+     */
+    protected function callback( ServerRequestInterface $request, callable $next )
     {
-        return $next();
+        $session      = new SessionModel( $request );
+        $this->app->method('session',static function( $app , $name = null , $value = null ) use( $session ) {
+            return $session;
+        });
+        return $next($request);
     }
-
     protected function prepare(): void
     {
         $config = $this->app->config();

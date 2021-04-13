@@ -9,6 +9,8 @@ remote_theme: kosatyi/sjt
 
 exclude:
   - vendor
+  - app
+  - examples
 
 javascript:
 
@@ -24,6 +26,6 @@ description: ReactPHP application router written in express.js style
 
 author:
   name: Stepan Kosatyi
-  url: http://www.kosatyi.com/
+  url: https://kosatyi.com/
 
 toolbar:

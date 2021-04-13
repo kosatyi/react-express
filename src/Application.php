@@ -12,11 +12,14 @@ use ReactExpress\Core\Config;
 use ReactExpress\Core\Loader;
 use ReactExpress\Core\Server;
 use ReactExpress\Core\Container;
+use ReactExpress\Routing\Controller;
 use ReactExpress\Routing\Router;
 use ReactExpress\Routing\Route;
 use ReactExpress\Http\Request;
 use ReactExpress\Http\Response;
 use ReactExpress\Exception\HaltException;
+use ReflectionClass;
+
 /**
  * Class Application
  * @package ReactExpress
@@ -24,15 +27,15 @@ use ReactExpress\Exception\HaltException;
  * @method Container method($name, $callback)
  * @method Container error($code, $message)
  * @method Container load($name, array $params = array())
- * @method Router use(string $path,callable $action = null)
- * @method Router get(string $path,callable $action = null)
- * @method Router post(string $path,callable $action = null)
- * @method Router all(string $path,callable $action = null)
- * @method Router put(string $path,callable $action = null)
- * @method Router delete(string $path,callable $action = null)
- * @method Router head(string $path,callable $action = null)
- * @method Router options(string $path,callable $action = null)
- * @method Router patch(string $path,callable $action = null)
+ * @method Router use (string $path, callable|Router $action = null)
+ * @method Router get(string $path, callable|Router $action = null)
+ * @method Router post(string $path, callable|Router $action = null)
+ * @method Router all(string $path, callable|Router $action = null)
+ * @method Router put(string $path, callable|Router $action = null)
+ * @method Router delete(string $path, callable|Router $action = null)
+ * @method Router head(string $path, callable|Router $action = null)
+ * @method Router options(string $path, callable|Router $action = null)
+ * @method Router patch(string $path, callable|Router $action = null)
  * @method Router route(string $path)
  * @method Router router()
  */
@@ -45,29 +48,31 @@ class Application
     /**
      * @var Container
      */
-    private $container;
+    private Container $container;
     /**
      * @var Router
      */
-    private $router;
+    private Router $router;
     /**
      * @var Server
      */
-    private $server;
+    private Server $server;
     /**
      * @var Config
      */
-    private $config;
+    private Config $config;
+
     /**
-     * @return null|static
+     * @return static|null
      */
-    public static function instance()
+    public static function instance(): ?Application
     {
         if (!isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
     }
+
     /**
      * Application constructor.
      */
@@ -76,9 +81,10 @@ class Application
         $this->server = new Server;
         $this->router = new Router;
         $this->container = new Container;
-        $this->config    = new Config;
+        $this->config = new Config;
         $this->setup();
     }
+
     /**
      *
      */
@@ -86,6 +92,7 @@ class Application
     {
 
     }
+
     /**
      * @param $name
      * @param $params
@@ -96,11 +103,12 @@ class Application
         if (method_exists($this, $name)) {
             return call_user_func_array([$this, $name], $params);
         }
-        if (method_exists($this->container,$name)){
+        if (method_exists($this->container, $name)) {
             return call_user_func_array([$this->container, $name], $params);
         }
         return call_user_func_array([$this->router, $name], $params);
     }
+
     /**
      * @param $port
      * @param $host
@@ -111,9 +119,10 @@ class Application
     {
         $server = $this->server();
         $server->certificate($cert);
-        $server->listen($port,$host);
+        $server->listen($port, $host);
         return $this;
     }
+
     /**
      * @return Server
      */
@@ -121,6 +130,7 @@ class Application
     {
         return $this->server->handler($this);
     }
+
     /**
      * @return Config
      */
@@ -128,26 +138,67 @@ class Application
     {
         return $this->config;
     }
+    private function parseAnnotations($doc)
+    {
+        preg_match_all('/@app\.([a-z]+?)\s+(.*?)\n/i', $doc, $annotations);
+        if (!isset($annotations[1]) or count($annotations[1]) == 0) {
+            return [];
+        }
+        return array_combine(array_map('trim',$annotations[1]),array_map('trim', $annotations[2]));
+    }
+    /**
+     * @param $path
+     * @param $class
+     * @return $this
+     */
+    public function controller($path, $class): Application
+    {
+        try {
+            $rc = new ReflectionClass($class);
+        } catch (Exception $e) {
+            return $this;
+        }
+        $methods = $rc->getMethods();
+        $router = $this->router();
+        $this->use($path, $router);
+        foreach ($methods as $index => $method) {
+            $params = $this->parseAnnotations($method->getDocComment());
+            $route = $params['route'] ?? null;
+            $type = $params['method'] ?? 'all';
+            if ($route) {
+                $router->{$type}($route, function (Container $app, $next) use ($rc, $method) {
+                    try {
+                        $instance = $rc->newInstance($app, $next);
+                        $instance->call($method->getName());
+                    } catch (Exception $e) {
+                        $next();
+                    }
+                });
+            }
+        }
+        return $this;
+    }
+
     /**
      * @param ServerRequestInterface $httpRequest
      * @return Promise|PromiseInterface
-     * @throws Exception|HaltException
+     * @throws Exception
      */
     public function request(ServerRequestInterface $httpRequest)
     {
         $container = $this->container;
-        $response  = new Response();
-        $request   = new Request($httpRequest);
-        $path   = $request->attr('path');
+        $response = new Response();
+        $request = new Request($httpRequest);
+        $path = $request->attr('path');
         $method = $request->attr('method');
-        $stack  = $this->router->match($path,$method);
+        $stack = $this->router->match($path, $method);
         $container->setResponse($response);
         $container->setRequest($request);
         $container->setConfig($this->config());
         try {
             $this->stack($stack);
         } catch (HaltException $e) {
-            $container->error($e->getCode(),$e->getMessage());
+            $container->error($e->getCode(), $e->getMessage());
         }
         return $response->promise();
     }
@@ -166,6 +217,7 @@ class Application
             $fn = null;
         };
     }
+
     /**
      * @param array $stack
      * @throws Exception|HaltException
@@ -173,8 +225,8 @@ class Application
     private function stack(array $stack): void
     {
         $index = 0;
-        $stack[] = new Route('','',static function( Container $app ){
-            $app->error(404,'Not Found');
+        $stack[] = new Route('', '', static function (Container $app) {
+            $app->error(404, 'Not Found');
         });
         $next = function () use (&$index, &$stack, &$next) {
             if ($index === count($stack)) {

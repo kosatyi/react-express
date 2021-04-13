@@ -26,30 +26,28 @@ class Container
     /**
      * @var Loader
      */
-    private $loader;
+    private Loader $loader;
     /**
      * @var Dispatcher
      */
-    private $dispatcher;
+    private Dispatcher $dispatcher;
 
     /**
      * @var Response
      */
-    private $response;
+    private Response $response;
     /**
      * @var Request
      */
-    private $request;
-
+    private Request $request;
     /**
      * @var Route
      */
-    private $route;
-
+    private Route $route;
     /**
      * @var Config
      */
-    private $config;
+    private Config $config;
     /**
      * Container constructor.
      */

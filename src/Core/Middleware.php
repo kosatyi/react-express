@@ -1,9 +1,9 @@
 <?php
 
 namespace ReactExpress\Core;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use ReactExpress\Application;
-
 /**
  * Class Middleware
  * @package ReactExpress\Core
@@ -33,22 +33,24 @@ class Middleware
      * @param callable|null $next
      * @return mixed
      */
-    protected function callback(ServerRequestInterface $request, callable $next = null)
+    protected function callback(ServerRequestInterface $request, callable $next)
     {
-        return $next();
+        return $next( $request );
     }
     /**
      * @param ServerRequestInterface $request
      * @param callable|null $next
      * @return mixed
      */
-    public function __invoke(ServerRequestInterface $request, callable $next = null)
+    public function __invoke(ServerRequestInterface $request, callable $next)
     {
         $run = $this->run;
-        return $this->callback($request,static function() use($request,$run,$next){
-            if( is_callable($run) ){
-                return $run($request,$next);
-            }
-        });
+        if( is_callable( $run ) ) {
+            $callback = function( $request  ) use( $next ){
+                return $this->callback( $request , $next );
+            };
+            return $run( $request , $callback );
+        }
+        return $next;
     }
 }
