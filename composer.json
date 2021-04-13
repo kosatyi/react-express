@@ -14,7 +14,6 @@
         "react/event-loop": "^0.4.3",
         "react/http": "^0.8.1",
         "wyrihaximus/react-http-middleware-session": "^1.0",
-        "kosatyi/datamodel": "^0.0.3",
         "symfony/yaml": "^4.3"
     },
     "require-dev": {
