@@ -1,31 +1,17 @@
-plugins:
-  - jekyll-seo-tag
-
-port: 4001
-
-styles:
-
 remote_theme: kosatyi/sjt
 
-exclude:
-  - vendor
-  - app
-  - examples
-
-javascript:
+navigation: false
+projects: true
 
 baseurl: /react-express
-
-navigation: false
-
-projects: true
 
 brand: react-express
 title: ReactExpress
 description: ReactPHP application router written in express.js style
+analytics: UA-37629144-1
+adsense: ca-pub-3650650669153101
 
 author:
   name: Stepan Kosatyi
   url: https://kosatyi.com/
 
-toolbar:
