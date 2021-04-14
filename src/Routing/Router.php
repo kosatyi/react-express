@@ -5,6 +5,15 @@ namespace ReactExpress\Routing;
 /**
  * Class Router
  * @package ReactExpress\Routing
+ * @method use (string $path, callable|Router $action = null)
+ * @method get(string $path, callable|Router $action = null)
+ * @method post(string $path, callable|Router $action = null)
+ * @method all(string $path, callable|Router $action = null)
+ * @method put(string $path, callable|Router $action = null)
+ * @method delete(string $path, callable|Router $action = null)
+ * @method head(string $path, callable|Router $action = null)
+ * @method options(string $path, callable|Router $action = null)
+ * @method patch(string $path, callable|Router $action = null)
  */
 class Router
 {

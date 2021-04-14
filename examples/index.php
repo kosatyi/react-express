@@ -26,13 +26,18 @@ $config->set('cookie.secure',false);
 $config->set('cookie.httponly',true);
 
 $app->method('error',static function(Container $app,$code,$message){
-
     $app->response->send(sprintf('%s - %s',$code,$message));
-
 });
 
 $app->method('render',static function(Container $app,$template,$data=[]){
 
+});
+/**
+ * @var Container $app
+ * @method json
+ */
+$app->method('json',static function(Container $app,$data=[]){
+    $app->response->json($data);
 });
 
 $app->controller('/admin' , Dashboard::class );
@@ -48,7 +53,9 @@ $dashboard->get('/',static function(Container $app,$next){
     $app->response->send('dashboard');
 });
 
-$dashboard->get('/admin',static function(Container $app,$next){
+
+
+$dashboard->get('/admin',static function(Container $app){
     $app->response->send('dashboard admin');
 });
 
@@ -61,28 +68,14 @@ $app->use('/dashboard/:path(.+)' , static function(Container $app, $next){
     $next();
 });
 
-$app->get('/',static function( Container $app ){
-    $app->session()->attr('foo','bar');
-    $app->response->attr('request',$app->request->all());
-    $app->response->attr('route',$app->route->all());
-    $app->response->attr('config', $app->config() );
-    $app->response->attr('session', $app->session()->all() );
-    $app->response->jsonData();
-});
-
-$app->get('/dashboard/:module?/:category?/:page?',static function ( Container $app ) {
-    $app->response->attr('request', $app->request->all() );
+$app->get('/', static function(Container $app){
     $app->response->attr('route', $app->route->all() );
     $app->response->attr('config', $app->config() );
-    $app->response->attr('session', $app->session()->all() );
     $app->response->jsonData();
 });
 
-$app->get('/:date(\d{10})-:alias([\w-]+)',static function ( Container $app ) {
-    $app->response->attr('request',$app->request->all());
-    $app->response->attr('route',$app->route->all());
-    $app->response->attr('config', $app->config() );
-    $app->response->jsonData();
+$app->get('/test',static function(Container $app){
+    $app->json(['test'=>123123]);
 });
 
 $app->server()->listen(9095);
